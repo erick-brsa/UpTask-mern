@@ -3,7 +3,7 @@ import express from 'express';
 import {
     getProjects,
     getProject,
-    newProyect,
+    newProject,
     updateProject,
     deleteProject,
     addMember,
@@ -18,7 +18,7 @@ const router = express.Router();
 router
     .route('/')
     .get(checkAuth, getProjects)
-    .post(checkAuth, newProyect);
+    .post(checkAuth, newProject);
 
 router
     .route('/:id')

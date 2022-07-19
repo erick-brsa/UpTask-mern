@@ -1,9 +1,9 @@
 import Project from '../models/Project.js';
 
-export const newProyect = async (req, res) => {
+export const newProject = async (req, res) => {
     const project = new Project(req.body);
     project.creator = req.user._id;
-    
+
     try {
         const savedProject = await project.save();
         res.json(savedProject);
@@ -12,10 +12,10 @@ export const newProyect = async (req, res) => {
     }
 };
 
-export const getProjects = async (req, res) => {    
+export const getProjects = async (req, res) => {
     const projects = await Project.find({
         creator: req.user._id
-    });    
+    });
     res.json(projects);
 };
 
@@ -23,32 +23,82 @@ export const getProject = async (req, res) => {
     const { id } = req.params;
 
     const project = await Project.findById(id);
-
+    
     if (!project) {
-        const error = new Error("El proyecto no existe");
+        const error = new Error('No encontrado');
         return res.status(404).json({ message: error.message });
     }
 
-    res.json('getProject');
-    // res.json(project);
+    if (project.creator.toString() !== req.user._id.toString()) {
+        const error = new Error('No estás autorizado');
+        return res.status(401).json({ message: error.message });
+    }
+
+    res.json(project);
 };
 
 export const updateProject = async (req, res) => {
-    console.log('updateProject');
+    const { id } = req.params;
+    
+    const project = await Project.findById(id);
+    
+    if (!project) {
+        const error = new Error('No encontrado');
+        return res.status(404).json({ message: error.message });
+    }
+    
+    if (project.creator.toString() !== req.user._id.toString()) {
+        const error = new Error('No estás autorizado');
+        return res.status(401).json({ message: error.message });
+    }
+
+    project.name = req.body.name || project.name;
+    project.description = req.body.description || project.description;
+    project.dateDelivery = req.body.dateDelivery || project.dateDelivery;
+    project.client = req.body.client || project.client;
+
+    try {
+        const savedProject = await project.save();
+        res.json(savedProject);
+    } catch (error) {
+        console.log(error);
+    }  
 };
 
 export const deleteProject = async (req, res) => {
-    console.log('deleteProject');
+    const { id } = req.params;
+    
+    const project = await Project.findById(id);
+    
+    if (!project) {
+        const error = new Error('No encontrado');
+        return res.status(404).json({ message: error.message });
+    }
+    
+    if (project.creator.toString() !== req.user._id.toString()) {
+        const error = new Error('No estás autorizado');
+        return res.status(401).json({ message: error.message });
+    }
+
+    try {
+        await project.deleteOne();
+        res.json({ message: 'Proyecto eliminado' });
+    } catch (error) {
+        console.log(error);
+    }
 };
 
+// TODO: Add member to project
 export const addMember = async (req, res) => {
     console.log('addMember');
 };
 
+// TODO: Remove member from project
 export const removeMember = async (req, res) => {
     console.log('removeMember');
 };
 
+// TODO: Get tasks from project
 export const getTasks = async (req, res) => {
     console.log('getTasks');
 };
