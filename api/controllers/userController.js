@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import generateId from "../helpers/generateId.js";
 import generateJWT from "../helpers/generateJWT.js";
+import { registerEmail, resetPasswordEmail } from "../helpers/email.js";
 
 export const createUser = async (req, res) => {
     // Evitar registro de usuarios duplicados
@@ -16,11 +17,18 @@ export const createUser = async (req, res) => {
     try {
         const user = new User(req.body);
         user.token = generateId();
-        const newUser = await user.save()
-        res.json(newUser);
+        await user.save()
+
+        // Enviar email de confirmación
+        registerEmail({
+            email: user.email,
+            name: user.name,
+            token: user.token    
+        });
+
+        res.json({message: "Usuario creado correctamente, Revisa tu email para confirmar tu cuenta"});
     } catch (error) {
         res.status(400).json({ message: error.message });
-        console.log(error);
     }
 }
 
@@ -90,17 +98,22 @@ export const resetPassword = async (req, res) => {
     try {
         user.token = generateId();
         await user.save();
+        resetPasswordEmail({
+            email: user.email,
+            name: user.name,
+            token: user.token
+        });
         res.json({ message: "Se ha enviado un correo para restablecer la contraseña" });
     } catch (error) {
         console.log(error);
     }
 } 
 
-export const checkToken = (req, res) => {
+export const checkToken = async (req, res) => {
 
     const { token } = req.params;
 
-    const validToken = User.findOne({ token });
+    const validToken = await User.findOne({ token });
 
     if (!validToken) {
         const error = new Error("Token inválido");
@@ -128,7 +141,7 @@ export const newPassword = async (req, res) => {
         }
     } else {
         const error = new Error("Token inválido");
-        return res.status(404).json({ message: error.message });
+        res.status(404).json({ message: error.message });
     }
 }
 

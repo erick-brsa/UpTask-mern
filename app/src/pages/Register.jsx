@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { useState } from 'react'
-import { Alert } from "../components/Alert"
+import { Alert } from "../components"
 import axios from 'axios'
 
 export const Register = () => {
@@ -40,15 +40,27 @@ export const Register = () => {
 		setAlert({})
 
 		try {
-			const response = await axios.post('http://localhost:4000/api/users', {
-				name, email, password
+			// TODO: Mover hacia un cliente axios 
+			const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, {
+				email: email.toLowerCase(), 
+				name, 
+				password
 			})
-			console.log(response)
-		} catch (error) {
-			console.log(error)
-		}
 
-		console.log("Creando usuario...")
+			setAlert({
+				message: data.message,
+				error: false
+			})
+			setName('')
+			setEmail('')
+			setPassword('')
+			setPasswordConfirmation('')
+		} catch (error) {
+			setAlert({
+				message: error.response.data.message,
+				error: true
+			})
+		}
 	}
 
 	const { message } = alert
@@ -78,6 +90,7 @@ export const Register = () => {
 						id="name"
 						placeholder="Nombre"
 						className="w-full mt-2 p-3 border rounded-lg bg-gray-50 focus:outline-blue-400"
+						value={name}
 						onChange={(e) => setName(e.target.value)}
 					/>
 				</div>
@@ -94,6 +107,7 @@ export const Register = () => {
 						id="email"
 						placeholder="Correo electronico"
 						className="w-full mt-2 p-3 border rounded-lg bg-gray-50 focus:outline-blue-400"
+						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 					/>
 				</div>
@@ -110,6 +124,7 @@ export const Register = () => {
 						id="password"
 						placeholder="Contraseña"
 						className="w-full mt-2 p-3 border rounded-lg bg-gray-50 focus:outline-blue-400"
+						value={password}
 						onChange={(e) => setPassword(e.target.value)}
 					/>
 				</div>
@@ -126,6 +141,7 @@ export const Register = () => {
 						id="confirm-password"
 						placeholder="Repetir Contraseña"
 						className="w-full mt-2 p-3 border rounded-lg bg-gray-50 focus:outline-blue-400"
+						value={passwordConfirmation}
 						onChange={(e) => setPasswordConfirmation(e.target.value)}
 					/>
 				</div>

@@ -13,7 +13,7 @@ app.use(express.json());
 dotenv.config();
 
 // Configurar cors
-const whiteList = ['http://127.0.0.1:5173'];
+const whiteList = [process.env.FRONTEND_URL];
 
 const corsOptions = {
     origin: (origin, callback) => {
