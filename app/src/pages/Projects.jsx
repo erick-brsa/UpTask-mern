@@ -1,7 +1,12 @@
+import useProjects from "../hooks/useProjects"
 export const Projects = () => {	
+
+	const { projects } = useProjects()
+    console.log(projects)
+
 	return (
 		<>
-			<div>Projects</div>
+			<h1 className="text-4xl font-black">Proyectos</h1>
 		</>
 	)
 }
