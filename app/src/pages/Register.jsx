@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import { useState } from 'react'
 import { Alert } from "../components"
-import axios from 'axios'
+import clientAxios from '../config/clientAxios'
 
 export const Register = () => {
 
@@ -41,7 +41,7 @@ export const Register = () => {
 
 		try {
 			// TODO: Mover hacia un cliente axios 
-			const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, {
+			const { data } = await clientAxios.post(`/users`, {
 				email: email.toLowerCase(), 
 				name, 
 				password

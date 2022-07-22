@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import { Alert } from "../components"
+import clientAxios from '../config/clientAxios'
 
 export const NewPassword = () => {
 
@@ -15,8 +15,7 @@ export const NewPassword = () => {
 	useEffect(() => {
 		const compareToken = async () => {
 			try {
-				// TODO: Mover hacia un cliente axios
-				await axios(`http://localhost:4000/api/users/reset-password/${token}`)
+				await clientAxios(`/users/reset-password/${token}`)
 				setValidToken(true)
 			} catch (error) {
 				setAlert({
@@ -40,8 +39,8 @@ export const NewPassword = () => {
 		}
 
 		try {
-			const url = `http://localhost:4000/api/users/reset-password/${token}`
-			const { data } = await axios.post(url, { password })
+			const url = `/users/reset-password/${token}`
+			const { data } = await clientAxios.post(url, { password })
 			setUpdatedPassword(true)
 			setPassword('')
 			setAlert({

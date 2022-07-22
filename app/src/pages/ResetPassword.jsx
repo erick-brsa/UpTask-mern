@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { Alert } from '../components'
-import axios from 'axios'
+import clientAxios from '../config/clientAxios'
 
 export const ResetPassword = () => {
 
@@ -19,7 +19,7 @@ export const ResetPassword = () => {
     }
 
     try {
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users/reset-password`, { email })
+      const { data } = await clientAxios.post(`/users/reset-password`, { email })
       console.log(data)
       setAlert({
         message: 'Se ha enviado un correo electrónico con las instrucciones para restablecer la contraseña',
