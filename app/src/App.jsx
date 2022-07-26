@@ -8,6 +8,7 @@ import {
 	ConfirmAccount,
 	Projects,
 	NewProject,
+	EditProject,
 	Project,
 } from "./pages"
 import { AuthProvider } from "./context/AuthProvider"
@@ -38,6 +39,7 @@ const App = () => {
 						<Route path="/proyectos" element={<ProtectedRoute />}>
 							<Route index element={<Projects />} />
 							<Route path="crear-proyecto" element={<NewProject />} />
+							<Route path="editar/:id" element={<EditProject />} />
 							<Route path=":id" element={<Project />} />
 						</Route>
 					</Routes>

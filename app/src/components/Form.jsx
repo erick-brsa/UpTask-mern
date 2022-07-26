@@ -1,15 +1,26 @@
-import { useState } from 'react'
-import { Alert } from './Alert'
+import { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import useProjects from '../hooks/useProjects'
 
 export const Form = () => {	
-
+    const [id, setId] = useState(null)
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [dateDelivery, setDateDelivery] = useState('')
     const [client, setClient] = useState('')
 
-    const { showAlert, alert, submitProject} = useProjects()
+    const { showAlert, alert, submitProject, project } = useProjects()
+    const params = useParams()
+
+    useEffect(() => {
+        if (params.id) {
+            setId(project._id)
+            setName(project.name)
+            setDescription(project.description)
+            setDateDelivery(project.dateDelivery?.split('T')[0])
+            setClient(project.client)
+        }
+    }, [params])
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -23,12 +34,14 @@ export const Form = () => {
 
         // Pasar datos al provider
         submitProject({
+            id,
             name,
             description,
             dateDelivery,
             client
         })
 
+        setId(null)
         setName('')
         setDescription('')
         setDateDelivery('')
@@ -39,16 +52,10 @@ export const Form = () => {
     
     return (
         <>
-
-            {/* {message && <Alert alert={alert} />}     */}
-        
             <form 
                 className="bg-white py-10 px-5 md:w-1/2 rounded-lg mx-auto"
                 onSubmit={handleSubmit}
             >
-
-                 
-
                 <div className='mb-5'>
                     <label
                         className="text-gray-700 uppercase font-bold text-sm"
@@ -114,7 +121,7 @@ export const Form = () => {
                 <input
                     type="submit"
                     className="bg-sky-600 w-full p-3 uppercase font-bold text-white rounded cursor-pointer hover:bg-sky-700 transition-colors"
-                    value="Crear Proyecto"
+                    value={id ? 'Actualizar Proyecto' : 'Crear Proyecto'}
                 />
             </form>
         </>

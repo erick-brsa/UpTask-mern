@@ -5,9 +5,10 @@ import clientAxios from '../config/clientAxios'
 const ProjectsContext = createContext()
 
 export const ProjectsProvider = ({ children }) => {
-    
     const [projects, setProjects] = useState([])
     const [alert, setAlert] = useState({})
+    const [project, setProject] = useState({})
+    const [loading, setLoading] = useState(false)
 
     const navigate = useNavigate()
 
@@ -45,6 +46,14 @@ export const ProjectsProvider = ({ children }) => {
     }
 
     const submitProject = async (project) => {
+        if (project.id) {
+            await updateProject(project)
+        } else {
+            await createProject(project)
+        }
+    }
+
+    const updateProject = async (project) => {
         try {
             const token = localStorage.getItem('token')
 
@@ -57,7 +66,38 @@ export const ProjectsProvider = ({ children }) => {
                 }
             }
 
-            const { data} = await clientAxios.post('/projects', project, config)
+            const { data } = await clientAxios.put(`/projects/${project.id}`, project, config)
+            const updatedProject = projects.map(p => p._id === data._id ? data : p)
+            setProjects(updatedProject)
+
+            setAlert({
+                message: 'Proyecto actualizado',
+                error: false
+            })
+
+            setTimeout(() => {
+                setAlert({})
+                navigate('/proyectos')
+            }, 3000)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const createProject = async (project) => {
+        try {
+            const token = localStorage.getItem('token')
+
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const { data } = await clientAxios.post('/projects', project, config)
 
             setProjects([...projects, data])
 
@@ -76,6 +116,7 @@ export const ProjectsProvider = ({ children }) => {
     }
 
     const getProject = async (id) => {
+        setLoading(true)
         try {
             const token = localStorage.getItem('token')
 
@@ -89,10 +130,11 @@ export const ProjectsProvider = ({ children }) => {
             }
 
             const { data } = await clientAxios(`/projects/${id}`, config)
-
-            return data
+            setProject(data)
         } catch (error) {
             console.log(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -103,7 +145,9 @@ export const ProjectsProvider = ({ children }) => {
                 showAlert,
                 projects,
                 submitProject,
-                getProject
+                project,
+                getProject,
+                loading
             }}
         >
             {children}

@@ -36,12 +36,9 @@ export const getProject = async (req, res) => {
     }
 
     // Obtener tareas del proyecto
-    const tasks = await Task.find().where('project').equals(project._id);
+    // const tasks = await Task.find().where('project').equals(project._id);
 
-    res.json({
-        project,
-        tasks
-    });
+    res.json(project);
 };
 
 export const updateProject = async (req, res) => {

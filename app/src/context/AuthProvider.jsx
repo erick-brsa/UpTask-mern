@@ -8,11 +8,10 @@ export const AuthProvider = ({ children }) => {
     
     const [auth, setAuth] = useState({})
     const [loading, setLoading] = useState(true)
-    
-    const navigate = useNavigate()
 
     useEffect(() => {
         const authUser = async () => {
+            
             const token = localStorage.getItem('token')
             if (!token) {
                 setLoading(false)
@@ -29,11 +28,11 @@ export const AuthProvider = ({ children }) => {
             try {
                 const { data } = await clientAxios('/users/account', config)
                 setAuth(data)
-                navigate('/proyectos')
             } catch (error) {
                 setAuth({})
-            } 
-            setLoading(false)
+            }  finally {
+                setLoading(false)
+            }
         }
         authUser()
     }, [])
