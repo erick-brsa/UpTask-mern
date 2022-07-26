@@ -19,7 +19,7 @@ export const Project = () => {
     }
 
     return (
-		<>
+		<div className="flex justify-between items-center">
             <h1 className="font-black text-4xl">{name}</h1>
 			<div className="flex items-center gap-2 text-gray-400 hover:text-gray-600">
                 <svg 
@@ -42,6 +42,6 @@ export const Project = () => {
                     Editar
                 </Link>
             </div>
-		</>
+		</div>
 	)
 }

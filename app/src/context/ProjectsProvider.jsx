@@ -133,8 +133,40 @@ export const ProjectsProvider = ({ children }) => {
             setProject(data)
         } catch (error) {
             console.log(error)
+            navigate('/proyectos')
         } finally {
             setLoading(false)
+        }
+    }
+
+    const deleteProject = async (id) => {
+        try {
+            const token = localStorage.getItem('token')
+
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }       
+
+            const { data } = await clientAxios.delete(`/projects/${id}`, config)
+            const updatedProjects = projects.filter(p => p._id !== data._id)
+            setProjects(updatedProjects)
+
+            setAlert({
+                message: 'Proyecto eliminado',
+                error: false
+            })
+
+            setTimeout(() => {
+                setAlert({})
+                navigate('/proyectos')
+            }, 3000)
+        } catch (error) {
+            console.log(error)   
         }
     }
 
@@ -147,7 +179,8 @@ export const ProjectsProvider = ({ children }) => {
                 submitProject,
                 project,
                 getProject,
-                loading
+                loading,
+                deleteProject
             }}
         >
             {children}
