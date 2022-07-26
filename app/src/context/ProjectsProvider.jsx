@@ -11,6 +11,31 @@ export const ProjectsProvider = ({ children }) => {
 
     const navigate = useNavigate()
 
+    useEffect(() => {
+        const getProjects = async () => {
+            try {
+                const token = localStorage.getItem('token')
+                if (!token) {
+                    setLoading(false)
+                    return
+                }
+
+                const config = {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+
+                const { data } = await clientAxios('/projects', config)
+                setProjects(data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        getProjects()
+    }, [])
+
     const showAlert = (alert) => {
         setAlert(alert)
 
@@ -32,7 +57,9 @@ export const ProjectsProvider = ({ children }) => {
                 }
             }
 
-            await clientAxios.post('/projects', project, config)
+            const { data} = await clientAxios.post('/projects', project, config)
+
+            setProjects([...projects, data])
 
             setAlert({
                 message: 'Proyecto creado',
@@ -43,7 +70,27 @@ export const ProjectsProvider = ({ children }) => {
                 setAlert({})
                 navigate('/proyectos')
             }, 3000)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
+    const getProject = async (id) => {
+        try {
+            const token = localStorage.getItem('token')
+
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }
+
+            const { data } = await clientAxios(`/projects/${id}`, config)
+
+            return data
         } catch (error) {
             console.log(error)
         }
@@ -55,7 +102,8 @@ export const ProjectsProvider = ({ children }) => {
                 alert,
                 showAlert,
                 projects,
-                submitProject
+                submitProject,
+                getProject
             }}
         >
             {children}
