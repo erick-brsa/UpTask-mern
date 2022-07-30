@@ -9,6 +9,7 @@ export const ProjectsProvider = ({ children }) => {
     const [alert, setAlert] = useState({})
     const [project, setProject] = useState({})
     const [loading, setLoading] = useState(false)
+    const [modalFormTask, setModalFormTask] = useState(false)
 
     const navigate = useNavigate()
 
@@ -132,7 +133,6 @@ export const ProjectsProvider = ({ children }) => {
             const { data } = await clientAxios(`/projects/${id}`, config)
             setProject(data)
         } catch (error) {
-            console.log(error)
             navigate('/proyectos')
         } finally {
             setLoading(false)
@@ -170,6 +170,14 @@ export const ProjectsProvider = ({ children }) => {
         }
     }
 
+    const handleModalTask = () => {
+        setModalFormTask(!modalFormTask)
+    }
+
+    const submitTask = async (task) => {
+
+    }
+
     return (
         <ProjectsContext.Provider 
             value={{
@@ -180,7 +188,10 @@ export const ProjectsProvider = ({ children }) => {
                 project,
                 getProject,
                 loading,
-                deleteProject
+                deleteProject,
+                modalFormTask,
+                handleModalTask,
+                submitTask
             }}
         >
             {children}

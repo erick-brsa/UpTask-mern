@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { Alert } from "../components"
 import clientAxios from "../config/clientAxios"
@@ -11,6 +11,7 @@ export const Login = () => {
 	const [alert, setAlert] = useState({})
 
 	const { setAuth, loading } = useAuth()
+	const navigate = useNavigate()
 
 	if (loading) {
 		return (
@@ -37,6 +38,7 @@ export const Login = () => {
 			setAlert({})
 			setEmail("")
 			setPassword("")
+			navigate("/")
 		} catch (error) {
 			setAlert({
 				message: error.response.data.message,
