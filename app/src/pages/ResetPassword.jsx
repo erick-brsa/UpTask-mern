@@ -20,7 +20,6 @@ export const ResetPassword = () => {
 
     try {
       const { data } = await clientAxios.post(`/users/reset-password`, { email })
-      console.log(data)
       setAlert({
         message: 'Se ha enviado un correo electrónico con las instrucciones para restablecer la contraseña',
         error: false

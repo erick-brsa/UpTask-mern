@@ -16,14 +16,14 @@ export const newProject = async (req, res) => {
 export const getProjects = async (req, res) => {
     const projects = await Project.find({
         creator: req.user._id
-    });
+    }).select("-tasks");
     res.json(projects);
 };
 
 export const getProject = async (req, res) => {
     const { id } = req.params;
 
-    const project = await Project.findById(id);
+    const project = await Project.findById(id).populate('tasks');
     
     if (!project) {
         const error = new Error('No encontrado');

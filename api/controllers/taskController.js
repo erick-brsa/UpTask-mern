@@ -11,13 +11,15 @@ export const createTask = async (req, res) => {
         return res.status(400).json({ message: error.message });
     }
 
-    if (existingProject.creator.toString() !== req.user._id.toString()) {
+    if (existingProject.creator.toString() !== req.user._id.toString()) {  
         const error = new Error('No tienes permisos para crear tareas en este proyecto');
         return res.status(400).json({ message: error.message });
     }
 
     try {
         const task = await Task.create(req.body);
+        existingProject.tasks.push(task);
+        await existingProject.save();
         return res.status(201).json(task);
     } catch (error) {
         console.log(error);

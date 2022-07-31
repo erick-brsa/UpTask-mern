@@ -2,6 +2,7 @@ import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import useProjects from '../hooks/useProjects'
 import { Alert } from './Alert'
+import { useParams } from 'react-router-dom'
 
 const PRIORITY = ['Baja', 'Media', 'Alta']
 
@@ -9,20 +10,29 @@ export const ModalFormTask = () => {
 
 	const [name, setName] = useState('')
 	const [description, setDescription] = useState('')
+	const [dateDelivery, setDateDelivery] = useState('')
 	const [priority, setPriority] = useState('')
-	
-	const { modalFormTask, handleModalTask, alert, showAlert } = useProjects()
+
+	const { modalFormTask, handleModalTask, alert, showAlert, submitTask } = useProjects()
+
+	const { id } = useParams()
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
-		if ([name, description, priority].includes('')) {
+		if ([name, description, dateDelivery, priority].includes('')) {
 			showAlert({
 				message: "Todos los campos son obligatorios",
 				error: true
 			})
 			return
 		}
-		
+		await submitTask({
+			name, description, dateDelivery, priority, project: id
+		})
+		setName('')
+		setDescription('')
+		setDateDelivery('')
+		setPriority('')
 	}
 
 	const { message } = alert
@@ -75,7 +85,6 @@ export const ModalFormTask = () => {
 								</button>
 							</div>
 
-
 							<div className="sm:flex sm:items-start">
 								<div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
 									<Dialog.Title as="h3" className="text-4xl leading-6 font-bold text-gray-900">
@@ -115,6 +124,21 @@ export const ModalFormTask = () => {
 												value={description}
 												onChange={(e) => setDescription(e.target.value)}
 												/>
+										</div>
+										<div className="mb-5">
+											<label 
+												htmlFor="date-delivery" 
+												className="text-gray-700 uppercase font-bold text-sm"
+												>
+													Fecha Entrega
+											</label>
+											<input 
+												type="date" 
+												id="date-delivery" 
+												className="border-2 w-full p-2 placeholder:text-gray-400 rounded-md "
+												value={dateDelivery}
+												onChange={(e) => setDateDelivery(e.target.value)}
+											/>
 										</div>
 										<div className="mb-5">
 											<label 

@@ -175,7 +175,29 @@ export const ProjectsProvider = ({ children }) => {
     }
 
     const submitTask = async (task) => {
+        try {
+            const token = localStorage.getItem('token')
 
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }       
+
+            const { data } = await clientAxios.post('/tasks', task, config)
+
+            // Agrega la tarea al state
+            const updatedProject = {...project}
+            updatedProject.tasks = [...project.tasks, data] 
+            setProject(updatedProject)
+            setAlert({})
+            setModalFormTask(false)
+        } catch (error) {
+            console.log(error)   
+        }
     }
 
     return (
