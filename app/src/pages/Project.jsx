@@ -14,7 +14,7 @@ export const Project = () => {
 		getProject(id)
 	}, [])
 
-	const { name, description, tasks } = project
+	const { name } = project
 
 	if (loading) {
 		return null

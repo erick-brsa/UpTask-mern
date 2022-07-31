@@ -61,6 +61,7 @@ export const updateTask = async (req, res) => {
 
     task.name = req.body.name || task.name;
     task.description = req.body.description || task.description;
+    task.priority = req.body.priority || task.priority;
     task.status = req.body.status || task.status;
     task.dateDelivery = req.body.dateDelivery || task.dateDelivery;
 

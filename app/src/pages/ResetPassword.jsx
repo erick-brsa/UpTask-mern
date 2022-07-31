@@ -31,8 +31,9 @@ export const ResetPassword = () => {
         error: true
       })
     }
-
   }
+
+  
 
   const { message } = alert
 

@@ -8,14 +8,32 @@ const PRIORITY = ['Baja', 'Media', 'Alta']
 
 export const ModalFormTask = () => {
 
+	const [id, setId] = useState('')
 	const [name, setName] = useState('')
 	const [description, setDescription] = useState('')
 	const [dateDelivery, setDateDelivery] = useState('')
 	const [priority, setPriority] = useState('')
 
-	const { modalFormTask, handleModalTask, alert, showAlert, submitTask } = useProjects()
+	const { modalFormTask, handleModalTask, alert, showAlert, submitTask, task } = useProjects()
 
-	const { id } = useParams()
+	useEffect(() => {
+		if (task?._id) {
+			console.log(task)
+			setId(task._id)
+			setName(task.name)
+			setDescription(task.description)
+			setPriority(task.priority)
+			setDateDelivery(task.dateDelivery?.split('T')[0])
+			return
+		}
+		resetForm()
+	}, [task])
+
+	useEffect(() => {
+		console.log(priority)
+	}, [priority])
+
+	const params = useParams()
 
 	const handleSubmit = async (e) => {
 		e.preventDefault()
@@ -27,8 +45,13 @@ export const ModalFormTask = () => {
 			return
 		}
 		await submitTask({
-			name, description, dateDelivery, priority, project: id
+			id, name, description, dateDelivery, priority, project: params.id
 		})
+		resetForm()
+	}
+
+	const resetForm = () => {
+		setId('')
 		setName('')
 		setDescription('')
 		setDateDelivery('')
@@ -88,7 +111,7 @@ export const ModalFormTask = () => {
 							<div className="sm:flex sm:items-start">
 								<div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
 									<Dialog.Title as="h3" className="text-4xl leading-6 font-bold text-gray-900">
-										Crear tarea
+										{id ? 'Editar tarea' : 'Crear tarea'}
 									</Dialog.Title>
 
 									{message && <Alert alert={alert} />}
@@ -162,7 +185,7 @@ export const ModalFormTask = () => {
 										<input 
 											type="submit"
 											className="bg-sky-600 hover:bg-sky-700 text-sm w-full p-3 text-white uppercase font-bold cursor-pointer transition-colors rounded"
-											value="Crear tarea"
+											value={id ? 'Guardar cambios' : 'Crear tarea'}
 										/>
 									</form>
 								</div>

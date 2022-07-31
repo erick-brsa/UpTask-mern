@@ -10,6 +10,7 @@ export const ProjectsProvider = ({ children }) => {
     const [project, setProject] = useState({})
     const [loading, setLoading] = useState(false)
     const [modalFormTask, setModalFormTask] = useState(false)
+    const [task, setTask] = useState({})
 
     const navigate = useNavigate()
 
@@ -54,7 +55,8 @@ export const ProjectsProvider = ({ children }) => {
         }
     }
 
-    const updateProject = async (project) => {
+    const getProject = async (id) => {
+        setLoading(true)
         try {
             const token = localStorage.getItem('token')
 
@@ -67,21 +69,12 @@ export const ProjectsProvider = ({ children }) => {
                 }
             }
 
-            const { data } = await clientAxios.put(`/projects/${project.id}`, project, config)
-            const updatedProject = projects.map(p => p._id === data._id ? data : p)
-            setProjects(updatedProject)
-
-            setAlert({
-                message: 'Proyecto actualizado',
-                error: false
-            })
-
-            setTimeout(() => {
-                setAlert({})
-                navigate('/proyectos')
-            }, 3000)
+            const { data } = await clientAxios(`/projects/${id}`, config)
+            setProject(data)
         } catch (error) {
-            console.log(error)
+            navigate('/proyectos')
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -116,8 +109,7 @@ export const ProjectsProvider = ({ children }) => {
         }
     }
 
-    const getProject = async (id) => {
-        setLoading(true)
+    const updateProject = async (project) => {
         try {
             const token = localStorage.getItem('token')
 
@@ -130,12 +122,21 @@ export const ProjectsProvider = ({ children }) => {
                 }
             }
 
-            const { data } = await clientAxios(`/projects/${id}`, config)
-            setProject(data)
+            const { data } = await clientAxios.put(`/projects/${project.id}`, project, config)
+            const updatedProject = projects.map(p => p._id === data._id ? data : p)
+            setProjects(updatedProject)
+
+            setAlert({
+                message: 'Proyecto actualizado',
+                error: false
+            })
+
+            setTimeout(() => {
+                setAlert({})
+                navigate('/proyectos')
+            }, 3000)
         } catch (error) {
-            navigate('/proyectos')
-        } finally {
-            setLoading(false)
+            console.log(error)
         }
     }
 
@@ -174,7 +175,20 @@ export const ProjectsProvider = ({ children }) => {
         setModalFormTask(!modalFormTask)
     }
 
+    const handleModalEditTask = (task) => {
+        setTask(task)
+        setModalFormTask(true)
+    }
+
     const submitTask = async (task) => {
+        if (task?.id) {
+            await editTask(task)
+        } else {
+            await createTask(task)
+        }
+    }
+
+    const createTask = async (task) => {
         try {
             const token = localStorage.getItem('token')
 
@@ -190,9 +204,38 @@ export const ProjectsProvider = ({ children }) => {
             const { data } = await clientAxios.post('/tasks', task, config)
 
             // Agrega la tarea al state
-            const updatedProject = {...project}
-            updatedProject.tasks = [...project.tasks, data] 
+            const updatedProject = { ...project }
+            updatedProject.tasks = [...project.tasks, data]
             setProject(updatedProject)
+            setAlert({})
+            setModalFormTask(false)
+            setTask({})
+        } catch (error) {
+            console.log(error)   
+        }
+    }
+    
+    const editTask = async (task) => {
+        console.log(task)
+        try {
+            const token = localStorage.getItem('token')
+
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }       
+
+            const { data } = await clientAxios.put(`/tasks/${task.id}`, task, config)
+
+            // Agrega la tarea al state
+            const updatedProject = {...project}
+            updatedProject.tasks = updatedProject.tasks.map(task => task._id === data._id ? data : task)
+            setProject(updatedProject)
+
             setAlert({})
             setModalFormTask(false)
         } catch (error) {
@@ -213,7 +256,9 @@ export const ProjectsProvider = ({ children }) => {
                 deleteProject,
                 modalFormTask,
                 handleModalTask,
-                submitTask
+                task,
+                submitTask,
+                handleModalEditTask
             }}
         >
             {children}
