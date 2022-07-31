@@ -1,10 +1,10 @@
 import { useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
-import { ModalFormTask, Task } from "../components"
+import { Alert, ModalDeleteTask, ModalFormTask, Task } from "../components"
 import useProjects from "../hooks/useProjects"
 
 export const Project = () => {
-	const { handleModalTask } = useProjects()
+	const { handleModalTask, alert } = useProjects()
 
 	const { id } = useParams()
 
@@ -19,6 +19,8 @@ export const Project = () => {
 	if (loading) {
 		return null
 	}
+
+	const { message } = alert
 
 	return (
 		<>
@@ -69,6 +71,12 @@ export const Project = () => {
 
 			<p className="font-bold text-xl mt-10">Tareas del proyecto</p>
 
+			<div className="flex justify-center">
+				<div className="md:w-1/3 lg:w-1/4">
+					{message && ( <Alert alert={alert} />)}
+				</div>
+			</div>
+
 			<div className="bg-white shadow mt-10 rounded-lg">
 				{project.tasks?.length ? (
 					project.tasks.map((task) => (
@@ -82,6 +90,7 @@ export const Project = () => {
 			</div>
 
 			<ModalFormTask />
+			<ModalDeleteTask />
 		</>
 	)
 }

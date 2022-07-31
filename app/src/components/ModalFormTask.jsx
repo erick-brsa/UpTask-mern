@@ -18,7 +18,6 @@ export const ModalFormTask = () => {
 
 	useEffect(() => {
 		if (task?._id) {
-			console.log(task)
 			setId(task._id)
 			setName(task.name)
 			setDescription(task.description)
@@ -28,10 +27,6 @@ export const ModalFormTask = () => {
 		}
 		resetForm()
 	}, [task])
-
-	useEffect(() => {
-		console.log(priority)
-	}, [priority])
 
 	const params = useParams()
 

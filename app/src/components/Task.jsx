@@ -3,9 +3,9 @@ import useProjects from "../hooks/useProjects"
 
 export const Task = ({ task }) => {
 
-    const { _id, name, description, priority, dateDelivery, status  } = task
+    const { name, description, priority, dateDelivery, status  } = task
 
-    const { handleModalEditTask } = useProjects()
+    const { handleModalEditTask, handleModalDeleteTask } = useProjects()
     
 	return (
 		<div className="border-b p-5 xl:flex justify-between items-center">
@@ -37,6 +37,7 @@ export const Task = ({ task }) => {
                 )}
                 <button
                     className="bg-red-600 px-4 py-3 text-white uppercase font-bold rounded-lg"
+                    onClick={() => handleModalDeleteTask(task)}
                 >
                     Eliminar
                 </button>

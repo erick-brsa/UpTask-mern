@@ -10,6 +10,7 @@ export const ProjectsProvider = ({ children }) => {
     const [project, setProject] = useState({})
     const [loading, setLoading] = useState(false)
     const [modalFormTask, setModalFormTask] = useState(false)
+    const [modalDeleteTask, setModalDeleteTask] = useState(false)
     const [task, setTask] = useState({})
 
     const navigate = useNavigate()
@@ -216,7 +217,6 @@ export const ProjectsProvider = ({ children }) => {
     }
     
     const editTask = async (task) => {
-        console.log(task)
         try {
             const token = localStorage.getItem('token')
 
@@ -243,6 +243,42 @@ export const ProjectsProvider = ({ children }) => {
         }
     }
 
+    const handleModalDeleteTask = (task) => {
+        setTask(task)
+        setModalDeleteTask(!modalDeleteTask)
+    }
+
+    const deleteTask = async () => {
+        try {
+            const token = localStorage.getItem('token')
+
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }       
+
+            const { data } = await clientAxios.delete(`/tasks/${task._id}`, config)
+            setAlert({
+                message: data.message,
+                error: false
+            })
+
+            const updatedProject = {...project}
+            updatedProject.tasks = updatedProject.tasks.filter(t => t._id !== task._id)
+            setProject(updatedProject)
+            setModalDeleteTask(false)
+            setTimeout(() => {
+                setAlert({})
+            }, 3000)
+        } catch (error) {
+            console.log(error)   
+        }
+    }
+
     return (
         <ProjectsContext.Provider 
             value={{
@@ -258,7 +294,10 @@ export const ProjectsProvider = ({ children }) => {
                 handleModalTask,
                 task,
                 submitTask,
-                handleModalEditTask
+                handleModalEditTask,
+                modalDeleteTask,
+                handleModalDeleteTask,
+                deleteTask
             }}
         >
             {children}
