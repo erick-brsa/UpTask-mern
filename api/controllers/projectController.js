@@ -1,5 +1,5 @@
 import Project from '../models/Project.js';
-import Task from '../models/Task.js';
+import User from '../models/User.js';
 
 export const newProject = async (req, res) => {
     const project = new Project(req.body);
@@ -91,6 +91,16 @@ export const deleteProject = async (req, res) => {
         console.log(error);
     }
 };
+
+export const findMember = async (req, res) => {
+    const { email } = req.body
+    const user = await User.findOne({ email }).select('_id name email');
+    if (!user) {
+        const error = new Error('Usuario no encontrado');
+        return res.status(404).json({ message: error.message });
+    }
+    res.json(user);
+}   
 
 // TODO: Add member to project
 export const addMember = async (req, res) => {

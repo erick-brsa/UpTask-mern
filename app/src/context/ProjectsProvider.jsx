@@ -12,6 +12,7 @@ export const ProjectsProvider = ({ children }) => {
     const [modalFormTask, setModalFormTask] = useState(false)
     const [modalDeleteTask, setModalDeleteTask] = useState(false)
     const [task, setTask] = useState({})
+    const [member, setMember] = useState({})
 
     const navigate = useNavigate()
 
@@ -279,6 +280,37 @@ export const ProjectsProvider = ({ children }) => {
         }
     }
 
+    const submitMember = async (email) => {
+        try {
+            setLoading(true)
+            const token = localStorage.getItem('token')
+
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }       
+
+            const { data } = await clientAxios.post(`/projects/members`, { email }, config)
+
+            setMember(data)
+            
+            setTimeout(() => {
+                setAlert({})
+            }, 3000)
+        } catch (error) {
+            setAlert({
+                message: error.response.data.message,
+                error: true
+            })
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return (
         <ProjectsContext.Provider 
             value={{
@@ -297,7 +329,9 @@ export const ProjectsProvider = ({ children }) => {
                 handleModalEditTask,
                 modalDeleteTask,
                 handleModalDeleteTask,
-                deleteTask
+                deleteTask,
+                member,
+                submitMember
             }}
         >
             {children}

@@ -8,7 +8,7 @@ export const ProtectedRoute = () => {
 	const navigate = useNavigate()
 
 	if (loading) {
-		return <div>Loading...</div>
+		return null
 	}
 
 	if (!auth._id) {

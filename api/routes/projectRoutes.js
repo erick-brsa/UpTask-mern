@@ -6,6 +6,7 @@ import {
     newProject,
     updateProject,
     deleteProject,
+    findMember,
     addMember,
     removeMember
 } from '../controllers/projectController.js';
@@ -25,7 +26,9 @@ router
     .put(checkAuth, updateProject)
     .delete(checkAuth, deleteProject);
 
-router.post('add-member/:id', checkAuth, addMember);
-router.post('remove-member/:id', checkAuth, removeMember);
+router.post('/members', checkAuth, findMember);
+router.post('/members/:id', checkAuth, addMember);
+router.delete('/members/:id', checkAuth, removeMember);
+
 
 export default router;
