@@ -13,6 +13,7 @@ export const ProjectsProvider = ({ children }) => {
     const [modalDeleteTask, setModalDeleteTask] = useState(false)
     const [task, setTask] = useState({})
     const [member, setMember] = useState({})
+    const [modalDeleteMember, setModalDeleteMember] = useState(false)
 
     const navigate = useNavigate()
 
@@ -349,6 +350,50 @@ export const ProjectsProvider = ({ children }) => {
         }
     }
 
+    const handleModalDeleteMember = async (member) => {
+        setModalDeleteMember(!modalDeleteMember)
+        setMember(member)
+    }
+
+    const deleteMember = async () => {
+        try {
+            const token = localStorage.getItem('token')
+
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }       
+
+            const { data } = await clientAxios.post(`/projects/remove-member/${project._id}`, {
+                id: member._id
+            } , config)
+            
+            const updatedProject = {...project}
+            updatedProject.members = updatedProject.members.filter(m => m._id !== member._id)
+            setProject(updatedProject)
+            
+            setAlert({
+                message: data.message,
+                error: false
+            })
+            setMember({})
+            setModalDeleteMember(false)
+        } catch (error) {
+            setAlert({
+                message: error.response.data.message,
+                error: true
+            })
+        } finally {
+            setTimeout(() => {
+                setAlert({})
+            }, 3000)
+        } 
+    }
+
     return (
         <ProjectsContext.Provider 
             value={{
@@ -370,7 +415,10 @@ export const ProjectsProvider = ({ children }) => {
                 deleteTask,
                 member,
                 submitMember,
-                addMember
+                addMember,
+                modalDeleteMember,
+                handleModalDeleteMember,
+                deleteMember
             }}
         >
             {children}

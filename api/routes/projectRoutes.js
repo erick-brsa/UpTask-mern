@@ -28,7 +28,7 @@ router
 
 router.post('/members', checkAuth, findMember);
 router.post('/members/:id', checkAuth, addMember);
-router.delete('/members/:id', checkAuth, removeMember);
+router.post('/remove-member/:id', checkAuth, removeMember);
 
 
 export default router;

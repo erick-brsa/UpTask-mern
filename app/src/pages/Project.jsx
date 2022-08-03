@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
-import { Alert, Member, ModalDeleteTask, ModalFormTask, Task } from "../components"
+import { Alert, Member, ModalDeleteMember, ModalDeleteTask, ModalFormTask, Task } from "../components"
 import useProjects from "../hooks/useProjects"
 
 export const Project = () => {
@@ -108,7 +108,7 @@ export const Project = () => {
 					</p>
 				)}
 			</div>
-
+			<ModalDeleteMember />
 			<ModalFormTask />
 			<ModalDeleteTask />
 		</>

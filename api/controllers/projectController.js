@@ -119,8 +119,6 @@ export const addMember = async (req, res) => {
     const { email } = req.body
 
     const user = await User.findOne({ email }).select('_id name email');
-    console.log(project.creator.toString())
-    console.log(req.user._id.toString());
 
     if (!user) {
         const error = new Error('Usuario no encontrado');
@@ -142,7 +140,19 @@ export const addMember = async (req, res) => {
     res.json({ message: 'Usuario agregado' });
 };
 
-// TODO: Remove member from project
 export const removeMember = async (req, res) => {
-    console.log('removeMember');
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+        const error = new Error('Proyecto no encontrado');
+        return res.status(404).json({ message: error.message });
+    }
+    
+    if (project.creator.toString() !== req.user._id.toString()) {
+        const error = new Error('No estás autorizado');
+        return res.status(401).json({ message: error.message });
+    }
+    
+    project.members.pull(req.body.id);
+    await project.save();
+    return res.json({ message: 'Colaborador eliminado correctamente' });
 };

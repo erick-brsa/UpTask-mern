@@ -8,3 +8,4 @@ export * from './ModalDeleteTask';
 export * from './Task';
 export * from './Member';
 export * from './FormMember';
+export * from './ModalDeleteMember';
