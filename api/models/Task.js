@@ -12,7 +12,7 @@ const taskSchema = new mongoose.Schema({
         trim: true
     }, 
     status: {
-        type: String,
+        type: Boolean,
         default: false
     },
     dateDelivery: {

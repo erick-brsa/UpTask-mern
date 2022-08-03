@@ -74,12 +74,16 @@ export const ProjectsProvider = ({ children }) => {
 
             const { data } = await clientAxios(`/projects/${id}`, config)
             setProject(data)
+            setAlert({})
         } catch (error) {
+            navigate('/')
             setAlert({
                 message: error.response.data.message,
                 error: true
             })
-            // navigate('/proyectos')
+            setTimeout(() => {
+                setAlert({})
+            }, 3000)
         } finally {
             setLoading(false)
         }
@@ -318,7 +322,6 @@ export const ProjectsProvider = ({ children }) => {
 
     const addMember = async (email) => {
         try {
-            setLoading(true)
             const token = localStorage.getItem('token')
 
             if (!token) return
@@ -343,7 +346,6 @@ export const ProjectsProvider = ({ children }) => {
                 error: true
             })
         } finally {
-            setLoading(false)
             setTimeout(() => {
                 setAlert({})
             }, 3000)
@@ -394,6 +396,32 @@ export const ProjectsProvider = ({ children }) => {
         } 
     }
 
+    const completeTask = async (id) => {
+        try {
+            // console.log(id)
+            const token = localStorage.getItem('token')
+
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }       
+
+            const { data } = await clientAxios.post(`/tasks/status/${id}`, {}, config)
+            console.log(data)
+            const updatedProject = {...project}
+            updatedProject.tasks = updatedProject.tasks.map(task => task._id === data._id ? data : task)
+            setAlert({})
+            setTask({})
+            setProject(updatedProject)
+        } catch (error) {
+            console.log(error.response)
+        }
+    }
+
     return (
         <ProjectsContext.Provider 
             value={{
@@ -418,7 +446,8 @@ export const ProjectsProvider = ({ children }) => {
                 addMember,
                 modalDeleteMember,
                 handleModalDeleteMember,
-                deleteMember
+                deleteMember,
+                completeTask
             }}
         >
             {children}

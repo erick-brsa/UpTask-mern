@@ -38,7 +38,7 @@ export const Login = () => {
 			setAlert({})
 			setEmail("")
 			setPassword("")
-			navigate("/")
+			navigate("/proyectos")
 		} catch (error) {
 			setAlert({
 				message: error.response.data.message,

@@ -15,10 +15,11 @@ router.post('/', checkAuth, createTask);
 
 router
     .route('/:id')
+    .post(checkAuth, updateTask)
     .get(checkAuth, getTask)
     .put(checkAuth, updateTask)
-    .delete(checkAuth, deleteTask);
+    .delete(checkAuth, deleteTask)
 
-router.post('/:id', checkAuth, changeStatus);
+router.post('/status/:id', checkAuth, changeStatus);
 
 export default router;

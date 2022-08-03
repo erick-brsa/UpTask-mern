@@ -89,11 +89,35 @@ export const deleteTask = async (req, res) => {
     }
 
     try {
-        await task.remove();
+        const project = await Project.findById(task.project);
+        project.tasks.pull(task._id);
+        await Promise.allSettled([await project.save(), await task.deleteOne()]);
         return res.json({ message: 'Tarea eliminada' });
     } catch (error) {
         console.log(error);
     }
 };
 
-export const changeStatus = async (req, res) => {};
+export const changeStatus = async (req, res) => {
+    const { id } = req.params;
+    
+    const task = await Task.findById(id).populate('project');
+    
+    if (!task) {
+        const error = new Error('No encontrado');
+        return res.status(404).json({ message: error.message });
+    }
+    
+    if (task.project.creator.toString() !== req.user._id.toString() && !task.project.members.some(m => m._id.toString() === req.user._id.toString())) {
+        const error = new Error('Acción no válida');
+        return res.status(403).json({ message: error.message });
+    }
+    
+    try {
+        task.status = !task.status;
+        await task.save();
+        return res.json(task);
+    } catch (error) {
+        console.log(error);
+    }
+};

@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
     
     const [auth, setAuth] = useState({})
     const [loading, setLoading] = useState(true)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const authUser = async () => {
@@ -28,6 +29,7 @@ export const AuthProvider = ({ children }) => {
             try {
                 const { data } = await clientAxios('/users/account', config)
                 setAuth(data)
+                // navigate('/proyectos')
             } catch (error) {
                 setAuth({})
             }  finally {
