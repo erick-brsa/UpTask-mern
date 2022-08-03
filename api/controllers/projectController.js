@@ -23,7 +23,9 @@ export const getProjects = async (req, res) => {
 export const getProject = async (req, res) => {
     const { id } = req.params;
 
-    const project = await Project.findById(id).populate('tasks');
+    const project = await Project.findById(id)
+        .populate('tasks')
+        .populate('members', '_id name email');
     
     if (!project) {
         const error = new Error('No encontrado');
@@ -100,11 +102,44 @@ export const findMember = async (req, res) => {
         return res.status(404).json({ message: error.message });
     }
     res.json(user);
-}   
+};
 
-// TODO: Add member to project
 export const addMember = async (req, res) => {
-    console.log('addMember');
+    const project = await Project.findById(req.params.id);
+    if (!project) {
+        const error = new Error('Proyecto no encontrado');
+        return res.status(404).json({ message: error.message });
+    }
+
+    if (project.creator.toString() !== req.user._id.toString()) {
+        const error = new Error('No estás autorizado');
+        return res.status(401).json({ message: error.message });
+    }
+
+    const { email } = req.body
+
+    const user = await User.findOne({ email }).select('_id name email');
+    console.log(project.creator.toString())
+    console.log(req.user._id.toString());
+
+    if (!user) {
+        const error = new Error('Usuario no encontrado');
+        return res.status(404).json({ message: error.message });
+    }
+
+    if (project.creator.toString() === user._id.toString()) {
+        const error = new Error('El creador del proyecto no puede ser colaborador');
+        return res.status(402).json({ message: error.message });
+    }
+
+    if (project.members.includes(user._id)) {
+        const error = new Error('El usuario ya pertenece proyecto');
+        return res.status(403).json({ message: error.message });
+    }
+
+    project.members.push(user._id);
+    await project.save();
+    res.json({ message: 'Usuario agregado' });
 };
 
 // TODO: Remove member from project

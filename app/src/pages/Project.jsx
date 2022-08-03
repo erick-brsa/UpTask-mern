@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
-import { Alert, ModalDeleteTask, ModalFormTask, Task } from "../components"
+import { Alert, Member, ModalDeleteTask, ModalFormTask, Task } from "../components"
 import useProjects from "../hooks/useProjects"
 
 export const Project = () => {
@@ -95,6 +95,18 @@ export const Project = () => {
 					to={`/proyectos/nuevo-colaborador/${project._id}`}
 					className="text-gray-400 hover:text-gray-600 uppercase font-bold"
 				>Añadir</Link>
+			</div>
+
+			<div className="bg-white shadow mt-10 rounded-lg">
+				{project.members?.length ? (
+					project.members.map((member) => (
+						<Member key={member._id} member={member} />
+					))
+				) : (
+					<p className="text-center my-5 p-10 font-semibold text-lg">
+						No hay colaboradores en este proyecto
+					</p>
+				)}
 			</div>
 
 			<ModalFormTask />

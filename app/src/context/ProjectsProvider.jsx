@@ -74,7 +74,11 @@ export const ProjectsProvider = ({ children }) => {
             const { data } = await clientAxios(`/projects/${id}`, config)
             setProject(data)
         } catch (error) {
-            navigate('/proyectos')
+            setAlert({
+                message: error.response.data.message,
+                error: true
+            })
+            // navigate('/proyectos')
         } finally {
             setLoading(false)
         }
@@ -295,12 +299,9 @@ export const ProjectsProvider = ({ children }) => {
             }       
 
             const { data } = await clientAxios.post(`/projects/members`, { email }, config)
-
+            
             setMember(data)
             
-            setTimeout(() => {
-                setAlert({})
-            }, 3000)
         } catch (error) {
             setAlert({
                 message: error.response.data.message,
@@ -308,6 +309,43 @@ export const ProjectsProvider = ({ children }) => {
             })
         } finally {
             setLoading(false)
+            setTimeout(() => {
+                setAlert({})
+            }, 3000)
+        }
+    }
+
+    const addMember = async (email) => {
+        try {
+            setLoading(true)
+            const token = localStorage.getItem('token')
+
+            if (!token) return
+
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
+            }       
+
+            const { data } = await clientAxios.post(`/projects/members/${project._id}`, email , config)
+            
+            setAlert({
+                message: data.message,
+                error: false
+            })
+            setMember({})
+        } catch (error) {
+            setAlert({
+                message: error.response.data.message,
+                error: true
+            })
+        } finally {
+            setLoading(false)
+            setTimeout(() => {
+                setAlert({})
+            }, 3000)
         }
     }
 
@@ -331,7 +369,8 @@ export const ProjectsProvider = ({ children }) => {
                 handleModalDeleteTask,
                 deleteTask,
                 member,
-                submitMember
+                submitMember,
+                addMember
             }}
         >
             {children}

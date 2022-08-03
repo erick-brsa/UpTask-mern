@@ -18,6 +18,7 @@ export const FormMember = () => {
             return
         }
         submitMember(email)
+        setEmail("")
     }
 
     const { message } = alert
