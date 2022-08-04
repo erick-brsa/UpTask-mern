@@ -9,3 +9,4 @@ export * from './Task';
 export * from './Member';
 export * from './FormMember';
 export * from './ModalDeleteMember';
+export * from './Browser';

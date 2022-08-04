@@ -115,8 +115,12 @@ export const changeStatus = async (req, res) => {
     
     try {
         task.status = !task.status;
+        task.completed = req.user._id;
         await task.save();
-        return res.json(task);
+        const savedTask = await Task.findById(id)
+            .populate('project')
+            .populate('completed');
+        return res.json(savedTask);
     } catch (error) {
         console.log(error);
     }

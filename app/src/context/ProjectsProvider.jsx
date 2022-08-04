@@ -14,6 +14,7 @@ export const ProjectsProvider = ({ children }) => {
     const [task, setTask] = useState({})
     const [member, setMember] = useState({})
     const [modalDeleteMember, setModalDeleteMember] = useState(false)
+    const [browser, setBrowser] = useState(false)
 
     const navigate = useNavigate()
 
@@ -422,6 +423,10 @@ export const ProjectsProvider = ({ children }) => {
         }
     }
 
+    const handleBrowser = () => {
+        setBrowser(!browser)
+    }
+
     return (
         <ProjectsContext.Provider 
             value={{
@@ -447,7 +452,9 @@ export const ProjectsProvider = ({ children }) => {
                 modalDeleteMember,
                 handleModalDeleteMember,
                 deleteMember,
-                completeTask
+                completeTask,
+                browser,
+                handleBrowser
             }}
         >
             {children}
