@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { Server } from 'socket.io';
 import connectarDB from './config/db.js';
 import userRoutes from './routes/userRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
@@ -38,6 +39,29 @@ app.use('/api/tasks', taskRoutes);
 
 const PORT = process.env.PORT || 4000;
 
-app.listen(4000, () => {
+const server = app.listen(4000, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
-})
+});
+
+// Socket.io
+
+const io = new Server(server, {
+    pingTimeout: 60000,
+    cors: {
+        origin: process.env.FRONTEND_URL
+    },
+});
+
+io.on('connection', (socket) => {
+    console.log('Conectado a socket.io');
+
+    // Definir los eventos del socket.io
+    socket.on('openProject', (project) => {
+        socket.join(project);
+    });
+    
+    socket.on('newTask', (task) => {
+        const project = task.project;
+        socket.on(project).emit('addedTask', task);
+    });
+});

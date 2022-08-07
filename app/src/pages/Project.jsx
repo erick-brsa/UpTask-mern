@@ -3,6 +3,9 @@ import { useParams, Link } from "react-router-dom"
 import { Alert, Member, ModalDeleteMember, ModalDeleteTask, ModalFormTask, Task } from "../components"
 import useProjects from "../hooks/useProjects"
 import useAdmin from "../hooks/useAdmin"
+import io from "socket.io-client"
+
+let socket;
 
 export const Project = () => {
 
@@ -13,6 +16,17 @@ export const Project = () => {
 	useEffect(() => {
 		getProject(id)
 	}, [])
+
+	useEffect(() => {
+		socket = io(import.meta.env.VITE_BACKEND_URL)
+		socket.emit("openProject", id)
+	}, [])
+
+	useEffect(() => {
+		socket.on('addedTask', (task) => {
+
+		})
+	})
 
 	const { name } = project
 

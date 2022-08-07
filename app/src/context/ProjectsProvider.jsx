@@ -1,6 +1,9 @@
 import { useState, useEffect, createContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import clientAxios from '../config/clientAxios'
+import io from 'socket.io-client'
+
+let socket;
 
 const ProjectsContext = createContext()
 
@@ -42,6 +45,10 @@ export const ProjectsProvider = ({ children }) => {
         }
         getProjects()
     }, [])
+
+    useEffect(() => {
+        socket = io(import.meta.env.VITE_BACKEND_URL)
+    }, []);
 
     const showAlert = (alert) => {
         setAlert(alert)
@@ -222,6 +229,9 @@ export const ProjectsProvider = ({ children }) => {
             setAlert({})
             setModalFormTask(false)
             setTask({})
+
+            // Socket.io
+            socket.emit('newTask', data)
         } catch (error) {
             console.log(error)   
         }
