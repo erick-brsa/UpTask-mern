@@ -9,7 +9,17 @@ let socket;
 
 export const Project = () => {
 
-	const { handleModalTask, alert, getProject, project, loading  } = useProjects()
+	const { 
+		handleModalTask, 
+		alert, 
+		getProject, 
+		project, 
+		loading, 
+		submitTaskProject, 
+		deleteTaskProject,
+		editedTaskProject,
+		completeTaskProject
+	} = useProjects()
 	const admin = useAdmin()
 	const { id } = useParams()
 
@@ -24,7 +34,27 @@ export const Project = () => {
 
 	useEffect(() => {
 		socket.on('addedTask', (task) => {
+			if (task.project === project._id) {
+				submitTaskProject(task)
+			}
+		})
 
+		socket.on('deletedTask', (task) => {
+			if (task.project === project._id) {
+				deleteTaskProject(task)
+			}
+		})
+
+		socket.on('editedTaskProject', (task) => {
+			if (task.project._id === project._id) {
+				editedTaskProject(task)
+			}
+		})
+
+		socket.on('completedTask', (task) => {
+			if (task.project._id === project._id) {
+				completeTaskProject(task)
+			}
 		})
 	})
 

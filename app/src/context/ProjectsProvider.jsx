@@ -257,6 +257,9 @@ export const ProjectsProvider = ({ children }) => {
             updatedProject.tasks = updatedProject.tasks.map(task => task._id === data._id ? data : task)
             setProject(updatedProject)
 
+            // Socket
+            socket.emit('editTask', data)
+
             setAlert({})
             setModalFormTask(false)
         } catch (error) {
@@ -291,6 +294,11 @@ export const ProjectsProvider = ({ children }) => {
             const updatedProject = {...project}
             updatedProject.tasks = updatedProject.tasks.filter(t => t._id !== task._id)
             setProject(updatedProject)
+            
+            // Socket
+            socket.emit('deleteTask', task)
+            
+            setTask({})
             setModalDeleteTask(false)
             setTimeout(() => {
                 setAlert({})
@@ -409,7 +417,6 @@ export const ProjectsProvider = ({ children }) => {
 
     const completeTask = async (id) => {
         try {
-            // console.log(id)
             const token = localStorage.getItem('token')
 
             if (!token) return
@@ -422,12 +429,15 @@ export const ProjectsProvider = ({ children }) => {
             }       
 
             const { data } = await clientAxios.post(`/tasks/status/${id}`, {}, config)
-            console.log(data)
+
             const updatedProject = {...project}
             updatedProject.tasks = updatedProject.tasks.map(task => task._id === data._id ? data : task)
+            setProject(updatedProject)
+            
+            socket.emit('completeTask', data)
+
             setAlert({})
             setTask({})
-            setProject(updatedProject)
         } catch (error) {
             console.log(error.response)
         }
@@ -435,6 +445,31 @@ export const ProjectsProvider = ({ children }) => {
 
     const handleBrowser = () => {
         setBrowser(!browser)
+    }
+
+    // Socket.io
+    const submitTaskProject = (task) => {
+        const updatedProject = { ...project }
+        updatedProject.tasks = [...updatedProject.tasks, task]
+        setProject(updatedProject)
+    }
+
+    const deleteTaskProject = (task) => {
+        const updatedProject = { ...project }
+        updatedProject.tasks = updatedProject.tasks.filter(t => t._id !== task._id)
+        setProject(updatedProject)
+    }
+
+    const editedTaskProject = (task) => {
+        const updatedProject = { ...project }
+        updatedProject.tasks = updatedProject.tasks.map(t => t._id === task._id ? task : t)
+        setProject(updatedProject)
+    }
+    
+    const completeTaskProject = (task) => {
+        const updatedProject = { ...project }
+        updatedProject.tasks = updatedProject.tasks.map(t => t._id === task._id ? task : t)
+        setProject(updatedProject)
     }
 
     return (
@@ -464,7 +499,11 @@ export const ProjectsProvider = ({ children }) => {
                 deleteMember,
                 completeTask,
                 browser,
-                handleBrowser
+                handleBrowser,
+                submitTaskProject,
+                deleteTaskProject,
+                editedTaskProject,
+                completeTaskProject
             }}
         >
             {children}
