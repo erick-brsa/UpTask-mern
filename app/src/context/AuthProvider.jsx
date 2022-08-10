@@ -39,12 +39,17 @@ export const AuthProvider = ({ children }) => {
         authUser()
     }, [])
 
+    const closeSessionAuth = () => {
+        setAuth({})
+    }
+
     return (
         <AuthContext.Provider 
             value={{
                 auth,
                 setAuth,
-                loading
+                loading, 
+                closeSessionAuth
             }}
         >
             {children}

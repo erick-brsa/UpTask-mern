@@ -1,10 +1,18 @@
 import { Link } from "react-router-dom"
 import { Browser } from "./Browser"
 import useProjects from "../hooks/useProjects"
+import useAuth from "../hooks/useAuth"
 
 export const Header = () => {	
 	
-	const { handleBrowser } = useProjects()
+	const { closeSessionAuth } = useAuth()
+	const { handleBrowser, closeSessionProjects } = useProjects()
+
+	const handleCloseSession = () => {
+		closeSessionAuth()
+		closeSessionProjects()
+		localStorage.removeItem('token')
+	}
 
 	return (
 		<header className="px-4 py-5 bg-white border-b">
@@ -12,11 +20,6 @@ export const Header = () => {
 				<h2 className="text-4xl font-black text-center text-sky-600 mb-5 md:mb-0">
 					UpTask
 				</h2>
-				{/* <input 
-					type="search" 
-					placeholder="Buscar Proyecto"
-					className="rounded-lg lg:w-96 block border p-2"
-				/> */}
 				<div className="flex flex-col md:flex-row items-center gap-4">
 					<button
 						type="button"
@@ -34,6 +37,7 @@ export const Header = () => {
 					<button
 						type="button"
 						className="text-white text-sm bg-sky-600 p-3 rounded-md uppercase font-bold"
+						onClick={handleCloseSession}
 					>
 						Cerrar sesión
 					</button>
